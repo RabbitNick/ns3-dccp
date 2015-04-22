@@ -19,6 +19,8 @@
 
 #include <fcntl.h>
 
+#include <stdlib.h>
+
 struct tcp_info tcp_info;
 
 
@@ -93,10 +95,10 @@ int main (int argc, char *argv[])
   int sock;
   sock = socket (PF_INET, SOCK_DCCP, IPPROTO_DCCP);
 
-  getCCID(sock);
+  // getCCID(sock);
 
-  setCCID(sock, 3);
-  getCCID(sock);
+  //setCCID(sock, 3);
+  // getCCID(sock);
   getCCID(sock);
 
 
@@ -114,12 +116,22 @@ int main (int argc, char *argv[])
   struct hostent *host = gethostbyname (argv[1]);
   memcpy (&addr.sin_addr.s_addr, host->h_addr_list[0], host->h_length);
 
+  char *ip = inet_ntoa(addr.sin_addr);
+
+  std::cout <<   "server IP : " << ip  << std::endl;
+
   int result;
+
   result = connect (sock, (const struct sockaddr *) &addr, sizeof (addr));
   if (result < 0)
     {
       printf ("connect errno=%d\n", errno);
+      std::cout << strerror(errno) << std::endl;
+      exit(-1);
+      return -1;
     }
+
+
 
   uint8_t buf[1024];
 
@@ -168,7 +180,7 @@ int main (int argc, char *argv[])
 
               if (errno == EINTR || errno == EAGAIN)
                 {
-                 // std::cout << "result < 0: " << errno << std::endl;
+                  std::cout << "result < 0: " << errno << std::endl;
                   usleep(1000);
                   continue;
                 }              

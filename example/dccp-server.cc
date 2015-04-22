@@ -39,13 +39,15 @@ int getCCID(int sock)
     printf("CCID %d : %d\n",i, ccids[i] );
   }
 
+  return 0;
+
 }
 
 int setCCID(int sock, unsigned char ccid)
 {
   uint8_t CCID = ccid;
   int ret =  setsockopt(sock, SOL_DCCP, DCCP_SOCKOPT_CCID, &CCID, sizeof (CCID) );
-  if (ret < 0)
+  if (ret != 0)
   {
     std::cout << "Can not set CCID: " << ret << std::endl;
   }
@@ -60,10 +62,16 @@ int main (int argc, char *argv[])
   int sock;
   sock = socket (PF_INET, SOCK_DCCP, IPPROTO_DCCP);
 
-  setCCID(sock, 3);
-  getCCID(sock);
-  getCCID(sock);
+  std::cout << " sock success "  << std::endl;
 
+
+ // setCCID(sock, 3);
+//  std::cout << " ccid setting success "  << std::endl;
+
+  getCCID(sock);
+ // getCCID(sock);
+
+  std::cout << " get ccid "  << std::endl;
 
 
   struct sockaddr_in addr;
@@ -71,13 +79,28 @@ int main (int argc, char *argv[])
   addr.sin_port = htons (SERVER_PORT);
   addr.sin_addr.s_addr = INADDR_ANY;
 
+
+
   int status;
   status = bind (sock, (const struct sockaddr *) &addr, sizeof(addr));
-  status = listen (sock, 5);
+  
+  std::cout << " bing success "  << std::endl;
+
+
+  status = listen (sock, 1);
+
+  std::cout << " listen success "  << std::endl;
+
+
+
 
   int fd = accept (sock, 0, 0);
   std::cout << " accept -> " << fd << std::endl;
 
+
+
+
+/*
   uint8_t buf[10240];
 
   memset (buf, 0, 10240);
@@ -142,7 +165,7 @@ int main (int argc, char *argv[])
 
   std::cout << "did read all buffers tot:" << tot << std::endl;
   std::cout << "total time :" << tot_time << " s " << "  rate: " << tot / tot_time << " byte/s" << std::endl;
-
+*/
   close (sock);
   close (fd);
 
